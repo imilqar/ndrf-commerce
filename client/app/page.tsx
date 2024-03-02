@@ -7,64 +7,22 @@ import {
   CarouselPrevious,
 } from "@/components/ui";
 
-import manPng from "@/assets/man.png";
-import womanPng from "@/assets/woman.webp";
+import { api } from "@/lib/api";
 
-const products = [
-  {
-    name: "T",
-    id: 1,
-    image: manPng,
-    price: 99.99,
-  },
-  {
-    name: "TD",
-    id: 2,
-    image: womanPng,
-    price: 99.99,
-  },
-  {
-    name: "Tb",
-    id: 3,
-    image: manPng,
-    price: 99.99,
-  },
-  {
-    name: "Tb",
-    id: 4,
-    image: manPng,
-    price: 99.99,
-  },
-  {
-    name: "Tb",
-    id: 5,
-    image: womanPng,
-    price: 99.99,
-  },
-  {
-    name: "Tb",
-    id: 6,
-    image: manPng,
-    price: 99.99,
-  },
-  {
-    name: "Tb",
-    id: 7,
-    image: womanPng,
-    price: 99.99,
-  },
-];
+export default async function Home() {
+  const products = await fetchFeaturedProducts();
 
-export default function Home() {
+  if (products.length === 0) return <div>None</div>;
+
   return (
     <main className="flex gap-12 min-h-screen flex-col items-center justify-between pt-10 p-24">
       <div className="flex h-auto items-center">
         <ProductCard
-          product={{ image: manPng }}
+          product={products[0]}
           className="w-1/2 sm:w-1/2"
           imageClassName="rounded-none rounded-l-md"
         />
-        <ProductCard product={{ image: womanPng }} isNewBadgeActive />
+        <ProductCard product={products[1]} isNewBadgeActive />
       </div>
 
       <div className="text-center">
@@ -74,7 +32,7 @@ export default function Home() {
       <div className="container mt-18">
         <Carousel className="w-full">
           <CarouselContent>
-            {products.map((product) => (
+            {products?.map((product: any) => (
               <CarouselItem
                 className="md:basis-1/2 lg:basis-1/3"
                 key={product.id}
@@ -89,4 +47,14 @@ export default function Home() {
       </div>
     </main>
   );
+}
+
+async function fetchFeaturedProducts() {
+  try {
+    const response = await api.get("/products/featured");
+    const products = response.data;
+    return products;
+  } catch (err) {
+    console.error(err);
+  }
 }

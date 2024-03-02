@@ -22,9 +22,10 @@ function ProductCard({
 }: ProductCardProps) {
   return (
     <div className={cn("w-[200px] sm:w-[450px] relative group", className)}>
-      <Link href="/product/a">
+      <Link href={`/product/${product.slug}`}>
         <AspectRatio ratio={6 / 9}>
           <Image
+            fill
             className={cn(
               "object-cover border border-input shadow-sm rounded-md h-full",
               imageClassName
