@@ -1,18 +1,14 @@
 import { ProductCard } from "@/components/product";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui";
 
 import { api } from "@/lib/api";
+
+import type { IProduct } from "@/components/product/types";
 
 export default async function Home() {
   const products = await fetchFeaturedProducts();
 
-  if (products.length === 0) return <div>None</div>;
+  if (!products || products.length === 0) return null;
 
   return (
     <main className="flex gap-12 min-h-screen flex-col items-center justify-between pt-10 p-24">
@@ -30,19 +26,25 @@ export default async function Home() {
       </div>
 
       <div className="container mt-18">
-        <Carousel className="w-full">
+        <Carousel
+          className="w-full border border-input shadow-sm rounded-md overflow-hidden"
+          opts={{
+            active: true,
+          }}
+        >
           <CarouselContent>
             {products?.map((product: any) => (
               <CarouselItem
                 className="md:basis-1/2 lg:basis-1/3"
                 key={product.id}
               >
-                <ProductCard product={product} />
+                <ProductCard
+                  imageClassName="rounded-none border-none shadow-none"
+                  product={product}
+                />
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
         </Carousel>
       </div>
     </main>
@@ -52,7 +54,7 @@ export default async function Home() {
 async function fetchFeaturedProducts() {
   try {
     const response = await api.get("/products/featured");
-    const products = response.data;
+    const products: IProduct[] = response.data;
     return products;
   } catch (err) {
     console.error(err);

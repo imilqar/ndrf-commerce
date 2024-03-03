@@ -1,6 +1,8 @@
 from rest_framework import serializers
+from django.db.models import Q
 
-from .models import Category, Product, ProductImage
+
+from .models import Category, Product, ProductImage, ProductStock
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -18,13 +20,21 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductVariantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ["color", "size", "quantity", "name", "sku"]
+        fields = ["uuid", "color", "slug"]
+
+
+class ProductStockSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductStock
+        fields = ["size", "quantity"]
 
 
 class ProductSerializer(serializers.ModelSerializer):
     product_image = ImageSerializer(many=True, read_only=True)
     category = CategorySerializer(many=False, read_only=True)
-    variants = ProductVariantSerializer(many=True, read_only=True)
+    # variants = ProductVariantSerializer(many=True, read_only=True)
+    stock = ProductStockSerializer(many=True, read_only=True)
+    variants = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -34,12 +44,23 @@ class ProductSerializer(serializers.ModelSerializer):
             "name",
             "description",
             "slug",
-            "sku",
             "image",
             "price",
             "color",
-            "size",
-            "quantity",
             "product_image",
+            "stock",
             "variants",
         ]
+
+    def get_variants(self, obj):
+        if obj.parent is None:
+            variants = Product.objects.filter(parent=obj)
+        else:
+            variants = Product.objects.filter(
+                Q(parent=obj.parent) | Q(uuid=obj.parent.uuid)
+            )
+
+        variants = variants.exclude(uuid=obj.uuid)  # Exclude the current product
+
+        serializer = ProductVariantSerializer(variants, many=True)
+        return serializer.data

@@ -5,8 +5,10 @@ import { cn } from "@/lib/utils";
 
 import { AspectRatio, Badge } from "@/components/ui";
 
+import type { IProduct } from "./types";
+
 export interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  product: any;
+  product: IProduct;
   isNewBadgeActive?: boolean;
   enableExtraFields?: boolean;
   imageClassName?: string;

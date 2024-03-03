@@ -43,12 +43,10 @@ class Product(models.Model):
     image = models.ImageField(upload_to="images/", default="images/default.png")
     price = models.DecimalField(max_digits=5, decimal_places=2)
     color = models.CharField(max_length=50)
-    size = models.CharField(max_length=20)
     parent = models.ForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True, related_name="variants"
     )
     is_feaute = models.BooleanField(default=False)
-    quantity = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -64,6 +62,22 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ProductStock(models.Model):
+    uuid = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True
+    )
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="stock")
+    size = models.CharField(max_length=20)
+    quantity = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = _("Product Stock")
+        verbose_name_plural = _("Product Stocks")
+
+    def __str__(self):
+        return self.product.name
 
 
 class ProductImage(models.Model):

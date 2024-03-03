@@ -1,6 +1,6 @@
 "use client";
-
-import { useCallback, useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -20,39 +20,50 @@ import {
 } from "@/components/ui";
 import { XIcon } from "lucide-react";
 
-export default function Product({ params }: any) {
+import type { IProduct } from "@/components/product/types";
+
+interface ProductPageProps {
+  params: {
+    slug: string;
+  };
+}
+
+export default function Product({ params }: ProductPageProps) {
   const { slug } = params;
-  const [product, setProduct] = useState(null);
-  const [selectedColor, setSelectedColor] = useState("");
-  const [selectedSize, setSelectedSize] = useState("");
-  const [activeImage, setActiveImage] = useState(product?.image);
+  const router = useRouter();
 
-  const checkStockQuantity = useCallback(() => {
-    if (!product) return 0;
-
-    var variant = product.variants.find(function (variant) {
-      return variant.color === selectedColor && variant.size === selectedSize;
-    });
-    return variant ? variant.quantity : 0;
-  }, [product, selectedColor, selectedSize]);
+  const [product, setProduct] = useState<IProduct | null>(null);
+  const [activeImg, setActiveImg] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchProductBySlug(slug).then((product) => {
-      setProduct(product);
-      setActiveImage(product.image);
-    });
+    const fetchProductBySlug = async (slug: string) => {
+      try {
+        const res = await api.get(`products/${slug}`);
+        setProduct(res.data);
+        setActiveImg(res.data.image);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchProductBySlug(slug);
   }, [slug]);
 
   if (!product) return null;
 
-  const colorOptions = product.variants?.map((variant: any) => variant.color);
-  const sizeOptions = product.variants?.map((variant: any) => variant.size);
+  const handleChangeActiveImage = (img: string) => {
+    setActiveImg(img);
+  };
+  const handleChangeProductVariant = (slug: string) => {
+    if (!slug) return;
+    router.push(`/product/${slug}`);
+  };
 
   return (
-    <main className="flex gap-4 flex-col min-h-screen items-center justify-between pt-10">
-      <div className="w-[70%] relative grid grid-cols-3 gap-4 border py-4 px-8 rounded-lg  ">
+    <main className="flex gap-4 flex-col min-h-screen items-center justify-center sm:justify-between pt-10">
+      <div className="sm:w-[70%] flex flex-col relative sm:grid grid-cols-3 gap-4 border py-4 px-8 rounded-lg  ">
         <Button
-          className="absolute bottom-2 right-2"
+          className="absolute lg:bottom-2 right-2"
           variant="ghost"
           size="icon"
           asChild
@@ -62,10 +73,10 @@ export default function Product({ params }: any) {
           </Link>
         </Button>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="w-full h-24 md:h-full overflow-y-scroll flex flex-wrap gap-2">
           <div
             className="w-[20%] cursor-pointer"
-            onClick={() => setActiveImage(product.image)}
+            onClick={() => handleChangeActiveImage(product.image)}
           >
             <AspectRatio ratio={6 / 9}>
               <Image
@@ -76,10 +87,11 @@ export default function Product({ params }: any) {
               />
             </AspectRatio>
           </div>
+
           {product.product_image?.map((productImg, idx) => (
             <div
               className="w-[20%] cursor-pointer"
-              onClick={() => setActiveImage(productImg.image)}
+              onClick={() => handleChangeActiveImage(productImg.image)}
               key={idx}
             >
               <AspectRatio ratio={6 / 9}>
@@ -87,7 +99,7 @@ export default function Product({ params }: any) {
                   fill
                   className="object-cover border-2 border-input shadow-md rounded-md h-full"
                   src={productImg.image}
-                  alt={productImg.alt_text}
+                  alt={productImg.alt_text || "product image"}
                 />
               </AspectRatio>
             </div>
@@ -100,60 +112,58 @@ export default function Product({ params }: any) {
               <Image
                 fill
                 className="object-cover border-2 border-input shadow-md rounded-md h-full"
-                src={activeImage}
+                src={activeImg || "selected product image"}
                 alt="product_image"
               />
             </AspectRatio>
           </div>
 
-          <h3 className="text-2xl font-semibold">{product.name}</h3>
+          <h3 className="text-2xl w-2/3 font-semibold break-words">
+            {product.name}
+          </h3>
           <p>${product.price}</p>
         </div>
 
         <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <Select onValueChange={setSelectedColor}>
+          <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+            <Select onValueChange={handleChangeProductVariant}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Select a color" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  {colorOptions.map((color: string, idx: number) => (
-                    <SelectItem value={color} key={idx}>
-                      {color}
+                  <SelectItem disabled value={product.slug}>
+                    {product.color}
+                  </SelectItem>
+                  {product.variants.map((variant) => (
+                    <SelectItem value={variant.slug} key={variant.uuid}>
+                      {variant.color}
                     </SelectItem>
                   ))}
                 </SelectGroup>
               </SelectContent>
             </Select>
 
-            <Select onValueChange={setSelectedSize}>
+            <Select>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Select a size" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  {sizeOptions.map((size: string, idx: number) => (
-                    <SelectItem value={size} key={idx}>
-                      {size}
+                  {product.stock.map((stock, idx: number) => (
+                    <SelectItem
+                      disabled={stock.quantity == 0}
+                      value={stock.size}
+                      key={idx}
+                    >
+                      {stock.size}
                     </SelectItem>
                   ))}
                 </SelectGroup>
               </SelectContent>
             </Select>
           </div>
-          <Button
-            className="bg-black"
-            disabled={
-              !selectedColor || !selectedSize || checkStockQuantity() == 0
-            }
-          >
-            {!selectedColor || !selectedSize
-              ? "Select color and size"
-              : checkStockQuantity() > 0
-              ? "Add to cart"
-              : "Out of stock"}
-          </Button>
+          <Button className="bg-black">Add to cart</Button>
 
           <div className="border"></div>
 
@@ -166,16 +176,6 @@ export default function Product({ params }: any) {
       </div>
     </main>
   );
-}
-
-async function fetchProductBySlug(slug) {
-  try {
-    const response = await api.get(`products/${slug}`);
-    const product = response.data;
-    return product;
-  } catch (err) {
-    console.error(err);
-  }
 }
 
 // TODO if color or size change change sku and view new product

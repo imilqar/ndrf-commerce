@@ -3,7 +3,7 @@ from unfold.admin import ModelAdmin, TabularInline
 from mptt.admin import DraggableMPTTAdmin
 from django.utils.translation import gettext_lazy as _
 
-from .models import Category, Product, ProductImage
+from .models import Category, Product, ProductImage, ProductStock
 
 
 @admin.register(Category)
@@ -28,6 +28,11 @@ class CategoryAdmin(DraggableMPTTAdmin, ModelAdmin):
         }
 
 
+class ProductStockInline(TabularInline):
+    model = ProductStock
+    extra = 1
+
+
 class ProductImageInline(TabularInline):
     model = ProductImage
     extra = 1
@@ -38,4 +43,4 @@ class ProductAdmin(ModelAdmin):
     list_display = ("name", "slug", "category")
     search_fields = ["name", "color", "size"]
     exclude = ("sku",)
-    inlines = [ProductImageInline]
+    inlines = [ProductStockInline, ProductImageInline]

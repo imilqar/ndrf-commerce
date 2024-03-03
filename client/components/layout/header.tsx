@@ -14,7 +14,9 @@ function Header() {
         <div className="w-8 h-8 flex items-center justify-center border border-input shadow-sm rounded-md">
           <Image className="w-4 h-4" src={LOGO} alt="logo" />
         </div>
-        <h2 className="text-xl font-semibold">{APP_NAME}</h2>
+        <h2 className="text-xl invisible sm:visible font-semibold">
+          {APP_NAME}
+        </h2>
       </Link>
 
       <div>
