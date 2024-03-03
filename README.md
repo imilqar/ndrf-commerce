@@ -7,5 +7,5 @@ Next.js Django REST Framework E-Commerce Application
 | **Admin Categories** | **Admin Products** |
 | ![index](https://github.com/imilqar/ndrf-commerce/assets/103822896/5d5f4a10-35a1-4a1c-b688-d4cd5cdfc3c3) | ![shop](https://github.com/imilqar/ndrf-commerce/assets/103822896/fd6da9dd-f5e2-4d2c-9797-bec9f8c61f48) |
 | **Index** | **Shop** |
-|  | ![product](https://github.com/imilqar/ndrf-commerce/assets/103822896/4bf594c9-4701-4848-84fc-b5bbe2fe6449)  |
-| **Product details** |   |
+| ![product](https://github.com/imilqar/ndrf-commerce/assets/103822896/4bf594c9-4701-4848-84fc-b5bbe2fe6449)  
+| **Product details** |
