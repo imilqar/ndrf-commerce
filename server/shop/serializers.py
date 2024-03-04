@@ -50,6 +50,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "product_image",
             "stock",
             "variants",
+            "updated_at",
         ]
 
     def get_variants(self, obj):

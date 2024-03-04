@@ -1,10 +1,12 @@
 import { api } from "@/lib/api";
+import dayjs from "dayjs";
 import { ProductCard } from "@/components/product";
 
 import type { IProduct } from "@/components/product/types";
 
 export default async function Shop() {
   const products = await fetchProducts();
+  const today = dayjs();
 
   if (!products || products.length == 0) return null;
 
@@ -15,7 +17,7 @@ export default async function Shop() {
         {products.map((product: any) => (
           <ProductCard
             product={product}
-            isNewBadgeActive={product.new}
+            isNewBadgeActive={today.diff(product.updated_at, "hour") < 1}
             enableExtraFields
             key={product.id}
           />

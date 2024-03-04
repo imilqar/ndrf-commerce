@@ -1,4 +1,8 @@
-import { Button } from "@/components/ui/button";
+"use client";
+import { useState, useEffect } from "react";
+
+import { api } from "@/lib/api";
+
 import {
   Sheet,
   SheetClose,
@@ -8,6 +12,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  Button,
 } from "@/components/ui";
 import { ShoppingCartIcon } from "lucide-react";
 
@@ -16,6 +21,21 @@ interface CartSheetProps {
 }
 
 function CartSheet({ triggerElement: TriggerElement }: CartSheetProps) {
+  const [cartItems, setCartItems] = useState([]);
+
+  useEffect(() => {
+    async function fetchCartItems() {
+      try {
+        const res = await api.get("/cart");
+        setCartItems(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    fetchCartItems();
+  }, []);
+
   return (
     <Sheet>
       <SheetTrigger asChild>{TriggerElement}</SheetTrigger>

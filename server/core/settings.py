@@ -60,6 +60,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "cart.middleware.ensure_cart.EnsureCartMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
