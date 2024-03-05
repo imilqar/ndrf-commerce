@@ -34,6 +34,7 @@ export default function Product({ params }: ProductPageProps) {
 
   const [product, setProduct] = useState<IProduct | null>(null);
   const [activeImg, setActiveImg] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProductBySlug = async (slug: string) => {
@@ -57,6 +58,18 @@ export default function Product({ params }: ProductPageProps) {
   const handleChangeProductVariant = (slug: string) => {
     if (!slug) return;
     router.push(`/product/${slug}`);
+  };
+
+  const handleAddToCart = async () => {
+    try {
+      const data = { product_slug: product.slug, size: selectedSize };
+      const res = await api.post("/cart/add", JSON.stringify(data), {
+        withCredentials: true,
+      });
+      console.log(res.data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -144,7 +157,7 @@ export default function Product({ params }: ProductPageProps) {
               </SelectContent>
             </Select>
 
-            <Select>
+            <Select onValueChange={setSelectedSize}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Select a size" />
               </SelectTrigger>
@@ -163,7 +176,13 @@ export default function Product({ params }: ProductPageProps) {
               </SelectContent>
             </Select>
           </div>
-          <Button className="bg-black">Add to cart</Button>
+          <Button
+            className="bg-black"
+            onClick={handleAddToCart}
+            disabled={!selectedSize}
+          >
+            Add to cart
+          </Button>
 
           <div className="border"></div>
 

@@ -1,4 +1,4 @@
-Next.js Django REST Framework E-Commerce Application
+# Next.js Django REST Framework E-Commerce Application
 
 
 |   |   |
@@ -9,3 +9,52 @@ Next.js Django REST Framework E-Commerce Application
 | **Index** | **Shop** |
 | ![product](https://github.com/imilqar/ndrf-commerce/assets/103822896/4bf594c9-4701-4848-84fc-b5bbe2fe6449)  
 | **Product details** |
+
+## Activate Virtual Environment (venv)
+
+1. Open your terminal and navigate to the project server directory.
+2. Activate the virtual environment:
+    - For Windows:
+        ```
+        venv\Scripts\activate
+        ```
+    - For Linux or MacOS:
+        ```
+        source venv/bin/activate
+        ```
+
+## Installing Required Dependencies
+
+1. Open a terminal with the virtual environment activated.
+2. Install the dependencies listed in `requirements.txt`:
+    ```
+    pip install -r requirements.txt
+    ```
+
+## Running the Project
+
+1. Open a terminal with the virtual environment activated.
+2. Make migrations for your Django models:
+    ```
+    python manage.py makemigrations
+    ```
+3. Apply migrations to your database:
+    ```
+    python manage.py migrate
+    ```
+4. Create a superuser for the Django admin:
+    ```
+    python manage.py createsuperuser
+    ```
+5. Start the Django server with the following command:
+    ```
+    python manage.py runserver
+    ```
+
+## Contributions
+
+- Feel free to contribute to the project or report any issues by opening an issue or sending a pull request.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE). For more information, read the license file.

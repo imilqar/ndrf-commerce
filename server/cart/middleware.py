@@ -1,4 +1,4 @@
-from ..models import Cart
+from .models import Cart
 
 
 class EnsureCartMiddleware:
